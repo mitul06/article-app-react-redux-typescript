@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Dispatch, useCallback } from 'react';
 import './App.css';
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { addArticle, removeArticle } from './redux/actionCreator';
+import AddArticle from './components/AddArticle';
+import Article from './components/Article';
 
-function App() {
+const App: React.FC = () => {
+
+  const articles : readonly IArticle[] = useSelector(
+    (state: ArticleState) => state.articles,
+    shallowEqual
+  )
+
+  const dispatch: Dispatch<any> = useDispatch();
+
+  const saveArticle = useCallback(
+    (article : IArticle) => dispatch(addArticle(article)),
+    [dispatch]
+  )
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <h1>Articles</h1>
+      <AddArticle saveArticle={saveArticle} />
+
+<hr/>
+      {articles.map((article: IArticle) => (
+        <Article key={article.id} article={article} removeArticle={removeArticle}  />
+      ))}
+
     </div>
   );
 }
